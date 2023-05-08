@@ -16,5 +16,29 @@ exports.createUser = (request, response) => {
 
     newUser.save()
         .then(newUser => response.status(201).json(newUser))
-        .catch(err => response.status(500).json({ error: err.message }))
+        .catch(err => response.status(500).json({ message: 'An error has ocurred', err }))
 }
+
+
+exports.updateUser = (request, response) => {
+    const { userId } = request.params;
+    const { username, email, password } = request.body;
+
+    userModel.findByIdAndUpdate(userId, { username, email, password }, { new: true })
+        .then(updatedUser => {
+            if (!updatedUser) throw new Error(`User with id ${userId} not found`);
+            response.status(200).json(updatedUser);
+        })
+        .catch(err => response.status(500).json({ message: 'An error has ocurred', err }));
+};
+
+exports.deleteUser = (request, response) => {
+    const { userId } = request.params;
+
+    userModel.findByIdAndDelete(userId)
+        .then(updatedUser => {
+            if (!updatedUser) throw new Error(`User with id ${userId} not found`);
+            response.status(200).json({ message: 'user deleted' });
+        })
+        .catch(err => response.status(500).json({ message: 'An error has ocurred', err }));
+};
